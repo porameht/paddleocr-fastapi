@@ -13,6 +13,7 @@ COPY --from=builder /app /app
 WORKDIR /app
 
 ENV PATH="/app/.venv/bin:$PATH"
+ENV PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK=True
 EXPOSE 8001
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["bash", "start.sh"]

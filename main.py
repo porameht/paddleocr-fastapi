@@ -1,5 +1,9 @@
 """PaddleOCR API Server - deploy on RunPod GPU pod."""
 
+import os
+
+os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
+
 import asyncio
 import base64
 import binascii
