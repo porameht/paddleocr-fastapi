@@ -1,0 +1,15 @@
+[project]
+name = "paddleocr-api"
+version = "0.1.0"
+description = "PaddleOCR Thai API Server - FastAPI + PaddleOCR, ready for RunPod GPU"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]",
+    "paddleocr",
+    "paddlepaddle-gpu",
+    "python-multipart",
+]
+
+[project.scripts]
+serve = "main:_cli"
