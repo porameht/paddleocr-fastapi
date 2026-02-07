@@ -7,7 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]",
     "paddleocr",
-    "paddlepaddle-gpu",
+    "paddlepaddle-gpu>=3.0.0",
     "python-multipart",
 ]
 

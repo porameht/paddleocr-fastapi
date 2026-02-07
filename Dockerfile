@@ -2,7 +2,7 @@ FROM python/uv:bookworm AS builder
 
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev
+RUN uv sync --frozen --no-dev --extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cu126/
 
 COPY . .
 
