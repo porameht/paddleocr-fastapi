@@ -3,13 +3,21 @@ name = "paddleocr-api"
 version = "0.1.0"
 description = "PaddleOCR Thai API Server - FastAPI + PaddleOCR, ready for RunPod GPU"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]",
     "paddleocr",
-    "paddlepaddle-gpu>=3.0.0",
+    "paddlepaddle-gpu",
     "python-multipart",
 ]
 
 [project.scripts]
 serve = "main:_cli"
+
+[[tool.uv.index]]
+name = "paddlepaddle"
+url = "https://www.paddlepaddle.org.cn/packages/stable/cu126/"
+explicit = true
+
+[tool.uv.sources]
+paddlepaddle-gpu = { index = "paddlepaddle" }
