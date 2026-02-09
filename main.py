@@ -18,6 +18,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from paddleocr import PaddleOCR
 from pydantic import BaseModel
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".tiff", ".bmp", ".webp"}
@@ -84,10 +85,21 @@ def _run_ocr(image_path: str) -> OCRResult:
     finally:
         os.unlink(image_path)
 
+    logger.info("predict returned %d result(s) in %.0fms", len(results), elapsed_ms)
+
     if not results:
         return OCRResult(raw_text="", regions=[], elapsed_ms=elapsed_ms)
 
     data = results[0].json
+    logger.info("result json keys: %s", list(data.keys()))
+    for key, val in data.items():
+        if isinstance(val, list):
+            logger.info("  %s: list[%d]", key, len(val))
+        elif hasattr(val, "shape"):
+            logger.info("  %s: array shape=%s", key, val.shape)
+        else:
+            logger.info("  %s: %s", key, type(val).__name__)
+
     texts = data.get("rec_texts", [])
     scores = data.get("rec_scores", [])
     boxes = data.get("rec_boxes", [])
@@ -129,6 +141,32 @@ async def ocr_base64(req: OCRBase64Request) -> OCRResult:
         raise HTTPException(status_code=400, detail=f"Invalid base64: {exc}") from exc
     tmp_path = _write_temp_file(img_bytes, suffix)
     return await asyncio.to_thread(_run_ocr, tmp_path)
+
+
+@app.post("/debug/ocr")
+async def debug_ocr(file: UploadFile = File(...)) -> dict:
+    """Debug endpoint - returns raw PaddleOCR result structure."""
+    suffix = _validate_extension(file.filename or "image.png")
+    data = await file.read()
+    tmp_path = _write_temp_file(data, suffix)
+    try:
+        with _engine_lock:
+            results = list(engine.predict(tmp_path))
+    finally:
+        os.unlink(tmp_path)
+
+    if not results:
+        return {"num_results": 0, "raw": None}
+
+    raw = results[0].json
+    # Convert numpy arrays to lists for JSON serialization
+    serializable = {}
+    for k, v in raw.items():
+        if hasattr(v, "tolist"):
+            serializable[k] = v.tolist()
+        else:
+            serializable[k] = v
+    return {"num_results": len(results), "keys": list(raw.keys()), "raw": serializable}
 
 
 @app.get("/health")
