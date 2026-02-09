@@ -15,6 +15,6 @@ WORKDIR /app
 
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK=True
-EXPOSE 8001
+EXPOSE 8000
 
 CMD ["bash", "start.sh"]

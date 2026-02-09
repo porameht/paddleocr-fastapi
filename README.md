@@ -10,7 +10,7 @@ uv sync
 uv run main.py
 ```
 
-Server runs at `http://localhost:8001`. Docs at `/docs`.
+Server runs at `http://localhost:8000`. Docs at `/docs`.
 
 ## API
 
@@ -19,7 +19,7 @@ Server runs at `http://localhost:8001`. Docs at `/docs`.
 Upload an image file:
 
 ```bash
-curl -X POST http://localhost:8001/ocr/upload \
+curl -X POST http://localhost:8000/ocr/upload \
   -F "file=@document.png"
 ```
 
@@ -28,7 +28,7 @@ curl -X POST http://localhost:8001/ocr/upload \
 Send base64-encoded image:
 
 ```bash
-curl -X POST http://localhost:8001/ocr/base64 \
+curl -X POST http://localhost:8000/ocr/base64 \
   -H "Content-Type: application/json" \
   -d '{"image_base64": "...", "filename": "doc.png"}'
 ```
@@ -41,5 +41,5 @@ Health check.
 
 ```bash
 docker build -t paddleocr-api .
-docker run --gpus all -p 8001:8001 paddleocr-api
+docker run --gpus all -p 8000:8000 paddleocr-api
 ```
