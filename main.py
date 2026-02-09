@@ -91,18 +91,15 @@ def _run_ocr(image_path: str) -> OCRResult:
         return OCRResult(raw_text="", regions=[], elapsed_ms=elapsed_ms)
 
     data = results[0].json
-    logger.info("result json keys: %s", list(data.keys()))
-    for key, val in data.items():
-        if isinstance(val, list):
-            logger.info("  %s: list[%d]", key, len(val))
-        elif hasattr(val, "shape"):
-            logger.info("  %s: array shape=%s", key, val.shape)
-        else:
-            logger.info("  %s: %s", key, type(val).__name__)
+    # Result is nested under "res" key in newer PaddleOCR versions
+    if "res" in data:
+        data = data["res"]
+    logger.info("result keys: %s", list(data.keys()))
 
     texts = data.get("rec_texts", [])
     scores = data.get("rec_scores", [])
     boxes = data.get("rec_boxes", [])
+    logger.info("found %d text regions", len(texts))
 
     regions = []
     for text, score, box in zip(texts, scores, boxes):
